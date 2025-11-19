@@ -3,24 +3,14 @@ from tkinter import ttk
 
 from menu import Menu
 from text_area import TextArea
+from status_bar import StatusBar
 
 
 
 
 class Notebook(tk.Toplevel):
-    """
-    A notebook window for editing text documents. 
-    
-    It contains a menu, line bar, text area and status bar.
-    
-    The menu contains typical commands for managing the contents of the 
-    text editor. The index bar provides line number labels which auto
-    update during editing of the text editor. The text editor allows for
-    editing text documents. The status bar provides updates on the
-    content of the text editor including the type of file open and the
-    position of the cursor in the text editor.
+    """A Notebook window for editing text documents."""
 
-    """
 
     def __init__(self, parent: tk.Tk, name: str, xpos: float, ypos: float):
         self.manager = parent
@@ -39,14 +29,11 @@ class Notebook(tk.Toplevel):
 
         self._configure_widgets()
 
+        self._configure_traces()
+
 
     def _configure_widgets(self) -> None:
-        """
-        Internal function.
-        
-        Configure the widgets for the notebook.
-        
-        """
+        """Internal function. Configure the widgets for the notebook."""
 
         self.menu = Menu(self)
         self.configure(menu=self.menu)
@@ -59,6 +46,31 @@ class Notebook(tk.Toplevel):
         vscroll.grid(row=0, column=1, sticky="ns")
         self.text_area.configure(yscrollcommand=vscroll.set)
 
-        # Lastly we request that the text area gets the focus on opening
-        # from the window manager
-        self.text_area.focus()    
+        self.status_bar = StatusBar(self)
+        self.status_bar.grid(row=1, column=0, columnspan=2, sticky="ew")
+
+        # Lastly we request that the Text Area gets the focus on opening
+        # from the window manager.
+        self.text_area.focus()
+
+
+    def _configure_traces(self) -> None:
+        """Internal function. Configure the traces between widgets."""
+
+        # Configure the traces to the Text Area variables tracking the
+        # content changes so that the Status Bar variables can be 
+        # updated.
+        self.text_area.chars.trace_add("write", 
+            lambda *args: self.status_bar.update_chars(
+                self.text_area.chars.get()))
+        self.text_area.lines.trace_add("write",
+            lambda *args: self.status_bar.update_lines(
+                self.text_area.lines.get()))
+        self.text_area.cursor.trace_add("write",
+            lambda *args: self.status_bar.update_cursor(
+                self.text_area.cursor.get()))
+
+        # Trace for the filetype variable
+        self.menu.file_menu.filetype.trace_add("write",
+            lambda *args: self.status_bar.update_filetype(
+                self.menu.file_menu.filetype.get()))  

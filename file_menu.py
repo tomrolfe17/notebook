@@ -6,14 +6,7 @@ from pathlib import Path
 
 
 class FileMenu(tk.Menu):
-    """
-    A File menu to attach to the main window menu.
-    
-    This menu contains the typical commands associated with an 
-    application that manages documents including new, open, save and 
-    save as.
-    
-    """
+    """A File menu to attach to the main window menu."""
 
 
     def __init__(self, parent: tk.Menu):
@@ -21,6 +14,7 @@ class FileMenu(tk.Menu):
         self.notebook = parent.notebook
         self.manager = parent.notebook.manager
         self.filepath: Path | None = None
+        self.filetype = tk.StringVar(value="Text File")
 
         super().__init__(parent)             
 
@@ -29,7 +23,7 @@ class FileMenu(tk.Menu):
     
 
     def _configure_menu(self) -> None:
-        """Configure the file menu commands i.e. New, Open..."""
+        """Internal function. Configure menu commands."""
 
         # This command creates a new blank window.
         self.add_command(label="New Book", accelerator="Command+N", 
@@ -86,10 +80,13 @@ class FileMenu(tk.Menu):
                 new_notebook.text_area.insert("1.0", f.read())
 
             # Set the modified status of the text area to False
-            new_notebook.textarea.edit_modified(False)
+            new_notebook.text_area.edit_modified(False)
 
             # Save the new filepath
             new_notebook.menu.file_menu.filepath = new_filepath
+
+            # Set the new filetype
+            new_notebook.menu.file_menu._update_filetype(new_filepath.suffix)
 
     
     def file_save(self) -> None:
@@ -134,6 +131,9 @@ class FileMenu(tk.Menu):
             # Save the new filepath
             new_notebook.menu.file_menu.filepath = new_filepath
 
+            # Set the new filetype
+            new_notebook.menu.file_menu._update_filetype(new_filepath.suffix)
+
     
     def file_rename(self) -> None:
         """Prompt the user to specify a new filepath to overwrite the
@@ -160,5 +160,22 @@ class FileMenu(tk.Menu):
                 # stored filepath attribute.
                 self.filepath = self.filepath.replace(new_filepath)
 
+                # Set the new filetype
+                self._update_filetype(new_filepath.suffix)
+
                 # Update the window title
                 self.notebook.title(self.filepath.name)
+
+
+    def _update_filetype(self, file_ext: Path) -> None:
+        """Internal function. Update filetype based on FILE_EXT."""
+        if file_ext == ".txt":
+            self.filetype.set("Text File")
+        elif file_ext == ".py":
+            self.filetype.set("Python Source File")
+        elif file_ext == ".c":
+            self.filetype.set("C Source File")
+        elif file_ext == ".cpp":
+            self.filetype.set("C++ Source File")
+        else:
+            self.filetype.set(f"{str(file_ext).strip('.').upper()} File")

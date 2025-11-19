@@ -4,13 +4,8 @@ from tkinter import messagebox
 
 
 class AppleMenu(tk.Menu):
-    """
-    The apple or application menu. 
+    """The apple or application menu.""" 
     
-    The only addition is the About Notebook command which opens a new
-    toplevel.
-    
-    """
 
     def __init__(self, parent: tk.Menu):
         self.notebook_menu = parent
