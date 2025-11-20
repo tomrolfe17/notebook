@@ -41,13 +41,19 @@ class Notebook(tk.Toplevel):
         self.text_area = TextArea(self)
         self.text_area.grid(row=0, column=0, sticky="nsew")
 
+        sep_right = ttk.Separator(self, orient="vertical")
+        sep_right.grid(row=0, column=1, sticky="ns")
+
         vscroll = ttk.Scrollbar(self, orient="vertical",
             command=self.text_area.yview)
-        vscroll.grid(row=0, column=1, sticky="ns")
+        vscroll.grid(row=0, column=2, sticky="ns")
         self.text_area.configure(yscrollcommand=vscroll.set)
 
+        sep_bottom = ttk.Separator(self, orient="horizontal")
+        sep_bottom.grid(row=1, column=0, columnspan=3, sticky="ew")
+
         self.status_bar = StatusBar(self)
-        self.status_bar.grid(row=1, column=0, columnspan=2, sticky="ew")
+        self.status_bar.grid(row=2, column=0, columnspan=3, sticky="ew")
 
         # Lastly we request that the Text Area gets the focus on opening
         # from the window manager.
