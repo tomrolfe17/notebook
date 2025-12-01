@@ -3,6 +3,7 @@ import sys
 
 from apple_menu import AppleMenu
 from file_menu import FileMenu
+from edit_menu import EditMenu
 
 
 
@@ -16,11 +17,11 @@ class Menu(tk.Menu):
 
         super().__init__(parent)
 
-        self.configure_menus()
+        self._configure_menus()
     
 
-    def configure_menus(self) -> None:
-        """Configure the submenus."""
+    def _configure_menus(self) -> None:
+        """Internal function. Configure the menu."""
    
         # Application menu, we can attach this one straight away
         # as it comes first after the apple icon menu.
@@ -33,4 +34,8 @@ class Menu(tk.Menu):
 
         # File menu
         self.file_menu = FileMenu(self)
-        self.add_cascade(label="File", menu=self.file_menu)      
+        self.add_cascade(label="File", menu=self.file_menu)
+
+        # Edit menu
+        self.edit_menu = EditMenu(self)
+        self.add_cascade(label="Edit", menu=self.edit_menu)     
